@@ -2,7 +2,7 @@
   <div class="trunk">
     <check-box label="Trunk Port" @change="toggleTP" />
     <div v-if="showTP" class="trunk__header">
-      Trunk Part:
+      Trunk Port:
       <div class="trunk__header__button" @click="toggleContent">
         <img
           src="../../../assets/collapse-icon.png"

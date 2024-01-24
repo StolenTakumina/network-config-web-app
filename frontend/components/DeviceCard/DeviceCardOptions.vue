@@ -2,18 +2,16 @@
   <div class="options">
     <div class="options__content">
       <basic-module :id="id" />
-      <check-box
-        label="Wyłącz nieużywane interfejsy"
-        @change="setDisableUnused"
-      />
       <interfaces-module :id="id" />
       <access-port-module
+        v-if="isSwitch"
         @change="toggleAP"
         @APInt="setAPInterface"
         @APDescription="setAPDescription"
         @VLANID="setVLANID"
       />
       <trunk-port-module
+        v-if="isSwitch"
         @change="toggleTP"
         @TPInt="setTPInterface"
         @TPDescription="setTPDescription"
@@ -38,6 +36,7 @@
         @domain="setDomainName"
         @username="setSSHUsername"
         @password="setSSHPassword"
+        @modulus="setSSHModulus"
         @v2="setSSHVersion"
       />
     </div>
@@ -80,15 +79,13 @@ export default {
         this.$store.getters["configuration/getDeviceType"](this.id) === "Router"
       );
     },
+    isSwitch() {
+      return (
+        this.$store.getters["configuration/getDeviceType"](this.id) === "Switch"
+      );
+    },
   },
   methods: {
-    setDisableUnused(value) {
-      const obj = {
-        id: this.id,
-        disable: value,
-      };
-      this.$store.dispatch("configuration/setDisableUnused", obj);
-    },
     toggleSSH(value) {
       const obj = {
         id: this.id,
@@ -169,7 +166,7 @@ export default {
     setDHCPNetwork(value) {
       const obj = {
         id: this.id,
-        network: value,
+        dhcpNetwork: value,
       };
       this.$store.dispatch("configuration/setDHCPNetwork", obj);
     },
@@ -208,6 +205,13 @@ export default {
       };
       this.$store.dispatch("configuration/setSSHPassword", obj);
     },
+    setSSHModulus(value) {
+      const obj = {
+        id: this.id,
+        modulus: value,
+      };
+      this.$store.dispatch("configuration/setSSHModulus", obj);
+    },
     setSSHVersion(value) {
       const obj = {
         id: this.id,
@@ -218,7 +222,7 @@ export default {
     toggleTP(value) {
       const obj = {
         id: this.id,
-        tp: value,
+        trunkPort: value,
       };
       this.$store.dispatch("configuration/setTrunkPortModule", obj);
     },

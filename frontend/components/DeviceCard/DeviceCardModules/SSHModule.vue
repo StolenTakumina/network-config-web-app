@@ -19,7 +19,11 @@
       <input-field label="Hasło" password @input="setSSHPassword" />
       <div class="ssh__content__modulus">
         Modulus :
-        <drop-down label="RSA Values" :options="rsaValues" />
+        <drop-down
+          label="RSA Values"
+          :options="rsaValues"
+          @selected="setModulus"
+        />
       </div>
       <check-box label="Version 2" @change="toggleV2" />
     </div>
@@ -57,6 +61,9 @@ export default {
     toggleV2() {
       this.v2 = !this.v2;
       this.$emit("v2", this.v2);
+    },
+    setModulus(value) {
+      this.$emit("modulus", value);
     },
   },
 };

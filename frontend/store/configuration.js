@@ -49,9 +49,6 @@ export const actions = {
   setPasswordEncryption({ commit }, { id, encryption }) {
     commit("SET_PASSWORD_ENCRYPTION", { id, encryption });
   },
-  setDisableUnused({ commit }, { id, disable }) {
-    commit("SET_DISABLE_UNUSED", { id, disable });
-  },
   setIPAddress({ commit }, { index, ip, id }) {
     commit("SET_IP_ADDRESS", { index, ip, id });
   },
@@ -63,6 +60,9 @@ export const actions = {
   },
   setSSHModule({ commit }, { id, ssh }) {
     commit("SET_SSH_MODULE", { id, ssh });
+  },
+  setSSHModulus({ commit }, { id, modulus }) {
+    commit("SET_SSH_MODULUS", { id, modulus });
   },
   setAccessPortModule({ commit }, { id, accessPort }) {
     commit("SET_ACCESS_PORT_MODULE", { id, accessPort });
@@ -153,6 +153,7 @@ export const actions = {
           return response.data.result;
         });
       console.log(data);
+      commit("RESET_FINAL_JSON");
     } catch (e) {
       console.error("Error while download:", e);
     }
@@ -164,13 +165,6 @@ export const mutations = {
   },
 
   SET_FINAL_JSON(state) {
-    for (let i = 0; i < state.devicesList.length; i++) {
-      for (let j = 0; j < state.devicesList[i].interfacesList.length; j++) {
-        state.devicesList[i].interfacesList[j].name +=
-          state.devicesList[i].interfacesList[j].id;
-        delete state.devicesList[i].interfacesList[j].intListID;
-      }
-    }
     state.finalJSON = state.devicesList;
   },
   ADD_DEVICE(state) {
@@ -183,7 +177,6 @@ export const mutations = {
       banner: "",
       secret: "",
       passwordEncryption: false,
-      disableUnused: false,
       ssh: [],
       accessPort: [],
       trunkPort: [],
@@ -225,9 +218,6 @@ export const mutations = {
   SET_PASSWORD_ENCRYPTION(state, { id, encryption }) {
     state.devicesList[id].passwordEncryption = encryption;
   },
-  SET_DISABLE_UNUSED(state, { id, disable }) {
-    state.devicesList[id].disableUnused = disable;
-  },
   SET_INTERFACE_NAME(state, { index, name, id }) {
     state.devicesList[id].interfacesList[index].name = name;
   },
@@ -260,11 +250,9 @@ export const mutations = {
   },
   SET_ACCESS_PORT_MODULE(state, { id, accessPort }) {
     const accessPortModule = {
-      domainName: "",
-      username: "",
-      password: "",
-      modulus: "",
-      version2: false,
+      apInterface: "",
+      description: "",
+      vlanID: "",
     };
     if (accessPort) {
       state.devicesList[id].accessPort.push(accessPortModule);
@@ -273,20 +261,20 @@ export const mutations = {
     }
   },
   SET_AP_INTERFACE(state, { id, apInterface }) {
-    state.devicesList[id].accessPort[0].interface = apInterface;
+    state.devicesList[id].accessPort[0].apInterface = apInterface.value;
   },
   SET_AP_DESCRIPTION(state, { id, description }) {
-    state.devicesList[id].accessPort[0].description = description;
+    state.devicesList[id].accessPort[0].description = description.value;
   },
   SET_VLAN_ID(state, { id, vlanID }) {
-    state.devicesList[id].accessPort[0].vlanID = vlanID;
+    state.devicesList[id].accessPort[0].vlanID = vlanID.value;
   },
   SET_TP_INTERFACE(state, { id, tpInterface }) {
-    state.devicesList[id].trunkPort[0].interface = tpInterface;
+    state.devicesList[id].trunkPort[0].tpInterface = tpInterface.value;
   },
   SET_TRUNK_PORT_MODULE(state, { id, trunkPort }) {
     const trunkPortModule = {
-      interface: "",
+      tpInterface: "",
       description: "",
       vlanRange: "",
     };
@@ -297,10 +285,10 @@ export const mutations = {
     }
   },
   SET_TP_DESCRIPTION(state, { id, description }) {
-    state.devicesList[id].trunkPort[0].description = description;
+    state.devicesList[id].trunkPort[0].description = description.value;
   },
   SET_VLAN_RANGE(state, { id, vlanRange }) {
-    state.devicesList[id].trunkPort[0].vlanRange = vlanRange;
+    state.devicesList[id].trunkPort[0].vlanRange = vlanRange.value;
   },
   SET_STATIC_ROUTE_MODULE(state, { id, sr }) {
     const staticRouteModule = {
@@ -315,13 +303,13 @@ export const mutations = {
     }
   },
   SET_DESTINATION(state, { id, destination }) {
-    state.devicesList[id].staticRoute[0].destination = destination;
+    state.devicesList[id].staticRoute[0].destination = destination.value;
   },
   SET_SR_SUBNET_MASK(state, { id, subnetMask }) {
-    state.devicesList[id].staticRoute[0].mask = subnetMask;
+    state.devicesList[id].staticRoute[0].mask = subnetMask.value;
   },
   SET_NEXT_HOP(state, { id, nextHop }) {
-    state.devicesList[id].staticRoute[0].nextHop = nextHop;
+    state.devicesList[id].staticRoute[0].nextHop = nextHop.value;
   },
   SET_DHCP_SERVER_MODULE(state, { id, dhcp }) {
     const dhcpServerModule = {
@@ -337,16 +325,16 @@ export const mutations = {
     }
   },
   SET_POOL_NAME(state, { id, poolName }) {
-    state.devicesList[id].dhcpServer[0].poolName = poolName;
+    state.devicesList[id].dhcpServer[0].poolName = poolName.value;
   },
   SET_DHCP_NETWORK(state, { id, dhcpNetwork }) {
-    state.devicesList[id].dhcpServer[0].dhcpNetwork = dhcpNetwork;
+    state.devicesList[id].dhcpServer[0].dhcpNetwork = dhcpNetwork.value;
   },
   SET_DEFAULT_ROUTER(state, { id, defaultRouter }) {
-    state.devicesList[id].dhcpServer[0].defaultRouter = defaultRouter;
+    state.devicesList[id].dhcpServer[0].defaultRouter = defaultRouter.value;
   },
   SET_DNS(state, { id, dns }) {
-    state.devicesList[id].dhcpServer[0].dns = dns;
+    state.devicesList[id].dhcpServer[0].dns = dns.value;
   },
   SET_DOMAIN_NAME(state, { id, domain }) {
     state.devicesList[id].ssh[0].domainName = domain.value;
@@ -360,7 +348,13 @@ export const mutations = {
   SET_SSH_VERSION(state, { id, version2 }) {
     state.devicesList[id].ssh[0].version2 = version2;
   },
+  SET_SSH_MODULUS(state, { id, modulus }) {
+    state.devicesList[id].ssh[0].modulus = modulus;
+  },
   REMOVE_DEVICE(state, id) {
     state.devicesList.splice(id, 1);
+  },
+  RESET_FINAL_JSON(state) {
+    state.finalJSON = {};
   },
 };

@@ -29,13 +29,7 @@ export default {
   name: "InterfacesModuleItem",
   data() {
     return {
-      interfaces: [
-        "FastEthernet",
-        "GigabitEthernet",
-        "Vlan",
-        "Serial",
-        "Loopback",
-      ],
+      interfaces: ["GigabitEthernet", "Vlan", "Serial", "Loopback"],
       pickedInterface: "",
     };
   },
