@@ -1,10 +1,11 @@
-# Dockerfile in /project/frontend directory
 FROM node:18.10-alpine
 
 RUN mkdir -p /app
 
+COPY assets /app/assets
 COPY components /app/components
 COPY pages /app/pages
+COPY layouts /app/layouts
 COPY plugins /app/plugins
 COPY static /app/static
 COPY store /app/store
