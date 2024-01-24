@@ -41,11 +41,6 @@ export default {
   gap: 40px;
   font-size: 24px;
   font-weight: bold;
-  margin-left: 20px;
-
-  &__label {
-    width: 200px;
-  }
 
   &__dropdown {
     display: flex;

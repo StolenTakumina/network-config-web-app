@@ -1,7 +1,19 @@
 <template>
   <div class="ssh">
     <check-box label="SSH" @change="toggleSSH" />
-    <div v-if="showSSH" class="ssh__content">
+    <div v-if="showSSH" class="ssh__header">
+      Konfiguracja połączenia SSH:
+      <div class="ssh__header__button" @click="toggleContent">
+        <img
+          src="../../../assets/collapse-icon.png"
+          width="34"
+          height="34"
+          alt="collapse-icon"
+          class="image"
+        />
+      </div>
+    </div>
+    <div v-if="showSSH" v-show="showContent" class="ssh__content">
       <input-field label="Nazwa domeny" @input="setDomainName" />
       <input-field label="Nazwa użytkownika" @input="setSSHUsername" />
       <input-field label="Hasło" password @input="setSSHPassword" />
@@ -16,15 +28,19 @@
 
 <script>
 export default {
-  name: "DeviceCardSSHModule",
+  name: "SSHModule",
   data() {
     return {
       rsaValues: ["1024", "2048", "4096"],
       showSSH: false,
+      showContent: true,
       v2: false,
     };
   },
   methods: {
+    toggleContent() {
+      this.showContent = !this.showContent;
+    },
     toggleSSH() {
       this.showSSH = !this.showSSH;
       this.$emit("change", this.showSSH);
@@ -50,7 +66,32 @@ export default {
 .ssh {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
+  height: fit-content;
+  padding: 20px;
+  border: 3px solid #2c3e50;
+  border-radius: 6px;
+  font-weight: bold;
+
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #2c3e50;
+    padding-bottom: 5px;
+
+    &__button {
+      width: 34px;
+      height: 34px;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #2c3e50;
+    }
+  }
 
   &__content {
     display: flex;

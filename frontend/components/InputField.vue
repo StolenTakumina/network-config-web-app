@@ -1,10 +1,16 @@
 <template>
   <div class="input">
-    <div class="input__label">
+    <div v-if="label.length > 0" class="input__label">
       {{ label }}
     </div>
     <div class="input__content">
-      <input v-if="!password" type="text" v-model="value" @input="saveValue" />
+      <input
+        v-if="!password"
+        :placeholder="placeholder"
+        type="text"
+        v-model="value"
+        @input="saveValue"
+      />
       <div v-else>
         <input :type="visible" v-model="value" @input="saveValue" />
         <button @click="togglePasswordVisibility">
@@ -20,6 +26,10 @@ export default {
   name: "InputField",
   props: {
     label: {
+      type: String,
+      default: "",
+    },
+    placeholder: {
       type: String,
       default: "",
     },

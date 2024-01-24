@@ -2,18 +2,28 @@
   <div class="card">
     <div class="card__header">
       <device-card-header :id="id" />
-      <button class="card__header__button" @click="remove">x</button>
-    </div>
-    <div class="card__content">
-      <div class="card__content__type">
-        Model urządzenia:
-        <div v-show="showInfo" class="card__content__type__dropdown__info">
-          Wybierz typ urządzenia
+      <div class="card__header__buttons">
+        <div class="card__header__buttons-collapse" @click="toggleCard">
+          <img
+            src="../../assets/collapse-icon.png"
+            width="34"
+            height="34"
+            alt="collapse-icon"
+            class="image"
+          />
         </div>
-        <div class="card__content__type__dropdown">
-          <drop-down v-show="!showInfo" :options="getModels" />
+        <div class="card__header__buttons-remove" @click="remove">
+          <img
+            src="../../assets/close-icon.png"
+            width="34"
+            height="34"
+            alt="close-icon"
+            class="image"
+          />
         </div>
       </div>
+    </div>
+    <div v-show="open" class="card__content">
       <device-card-options :id="id" />
     </div>
   </div>
@@ -30,83 +40,75 @@ export default {
   },
   data() {
     return {
-      routerModels: ["ISR4331", "1941"],
-      switchModels: ["2960-24TT"],
-      showInfo: true,
+      open: true,
     };
   },
-  computed: {
-    deviceType() {
-      return this.$store.getters["configuration/getDevice"](this.id);
-    },
-    getModels() {
-      if (this.deviceType === "Router") {
-        this.showInfo = false;
-        return this.routerModels;
-      } else if (this.deviceType === "Switch") {
-        this.showInfo = false;
-        return this.switchModels;
-      }
-      this.showInfo = true;
-      return [];
-    },
-  },
+  computed: {},
   methods: {
     remove() {
       this.$emit("remove", this.id);
+    },
+    toggleCard() {
+      this.open = !this.open;
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+image {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .card {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   border-radius: 8px;
-  border: 1px solid darkgreen;
+  border: 2px solid #5b89b8;
   padding: 10px;
-  gap: 20px;
+  width: 100%;
+  color: lightgray;
 
   &__header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding: 0 0 10px 20px;
+    border-bottom: 2px solid #5b89b8;
 
-    &__button {
-      border: none;
-      border-radius: 4px;
-      padding: 8px 12px;
-      background-color: darkred;
-      color: white;
-      font-weight: bold;
-      font-size: 18px;
-      cursor: pointer;
+    &__buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+
+      &-remove {
+        width: 34px;
+        height: 34px;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: darkred;
+      }
+
+      &-collapse {
+        width: 34px;
+        height: 34px;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: #2c3e50;
+      }
     }
   }
 
   &__content {
     display: flex;
     flex-direction: column;
+    width: 100%;
     gap: 20px;
-
-    &__type {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 40px;
-      margin-left: 20px;
-
-      &__label {
-        width: 200px;
-      }
-
-      &__dropdown {
-        display: flex;
-        width: fit-content;
-      }
-    }
   }
 }
 </style>
