@@ -135,7 +135,6 @@ export const actions = {
   },
   async exportConfig({ commit, state }) {
     commit("SET_FINAL_JSON");
-    console.log(state.finalJSON);
     const url = "http://localhost:8000/process/";
     const file = "config.txt";
     try {

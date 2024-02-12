@@ -33,15 +33,6 @@ def process_data(data):
         config_lines.extend([
             "login",
             "logging synchronous",
-            "exec-timeout 60",
-            "exit",
-            "",
-            "line vty 0 4",
-            "password cisco12345",
-            "transport input ssh",
-            "login local",
-            "logging synchronous",
-            "exec-timeout 60",
             "exit",
         ])
 
@@ -102,7 +93,7 @@ def process_data(data):
             config_lines.extend([
                 f"ip domain-name {ssh_data['domainName']}",
                 f"username {ssh_data['username']} privilege 15 secret {ssh_data['password']}"
-                f"crypto key generate rsa general-keys modulus {ssh_data['modulus']}"  ])
+                f"crypto key generate rsa general-keys modulus {ssh_data['modulus']}"])
             if ssh_data['version2']:
                 config_lines.append("ip ssh version 2")
             config_lines.extend([f"line vty 0 4",
